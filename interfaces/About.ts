@@ -15,7 +15,7 @@ export interface ListAboutHeroSection {
 interface WhoWeAre {
   title: string;
   description: string;
-  _id: string;
+  _id?: string;
 }
 
 
@@ -35,14 +35,14 @@ export interface WhatWeDoWhyChooseClio {
 interface Benefit {
   title: string;
   description: string;
-  _id: string;
+  _id?: string;
 }
 
 interface Card {
   title: string;
   description: string;
   image: string;
-  _id: string;
+  _id?: string;
 }
 
 
@@ -63,5 +63,5 @@ export interface ListWhoWeAreSection {
 interface WhoWeAre {
   title: string;
   description: string;
-  _id: string;
+  _id?: string;
 }

@@ -16,7 +16,7 @@ export interface LisBlogResponse {
 }
 
 interface Card {
-  _id: string;
+  _id?: string;
   title: string;
   description: string;
   content: string;

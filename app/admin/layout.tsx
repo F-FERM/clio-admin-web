@@ -11,6 +11,8 @@ import {
   Workflow,
   Info,
   ChevronDown,
+  ShieldCheck,
+  Anchor,
 } from "lucide-react";
 import { useState } from "react";
 
@@ -25,6 +27,49 @@ const sidebarItems = [
       { label: "Transport", href: "/admin/home/transport", icon: Truck },
       { label: "Workflow", href: "/admin/home/workflow", icon: Workflow },
       { label: "FAQ", href: "/admin/home/faq", icon: Info },
+    ],
+  },
+  {
+    label: "About",
+    icon: Info,
+    children: [
+      { label: "Hero", href: "/admin/about/hero", icon: Image },
+      { label: "What We Do", href: "/admin/about/what-we-do", icon: Workflow },
+    ],
+  },
+  {
+    label: "Blog",
+    icon: Image,
+    children: [
+      { label: "Manage", href: "/admin/blog/landing", icon: Image },
+    ],
+  },
+  {
+    label: "Network",
+    icon: Workflow,
+    children: [
+      { label: "Manage", href: "/admin/network", icon: Image },
+    ],
+  },
+  {
+    label: "Career",
+    icon: Briefcase,
+    children: [
+      { label: "Manage", href: "/admin/career", icon: Image },
+    ],
+  },
+  {
+    label: "Safety & Compliance",
+    icon: ShieldCheck,
+    children: [
+      { label: "Manage", href: "/admin/safety", icon: Image },
+    ],
+  },
+  {
+    label: "Fleet",
+    icon: Anchor,
+    children: [
+      { label: "Manage", href: "/admin/fleet", icon: Image },
     ],
   },
 ];

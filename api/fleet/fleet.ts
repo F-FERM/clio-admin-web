@@ -1,7 +1,4 @@
-
-import { ListCareerResponse } from "@/interfaces/Career";
 import { ListFleetResponse } from "@/interfaces/Fleet";
-import { ListFaqSection } from "@/interfaces/Home";
 import axiosInstance from "@/service/axios";
 import { AxiosError } from "axios";
 
@@ -39,5 +36,39 @@ export const ListFleetApi = async (data: {
       throw normalizedError;
     }
     throw error;
+  }
+};
+
+const BASE = "/fleet";
+
+// CREATE
+export const createFleet = async (data: Partial<ListFleetResponse>) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// UPDATE
+export const updateFleet = async (
+  data: Partial<ListFleetResponse> & { _id: string }
+) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// DELETE
+export const deleteFleet = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`${BASE}/${id}`);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
   }
 };

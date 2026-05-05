@@ -40,3 +40,37 @@ export const ListBlogApi = async (data: {
     throw error;
   }
 };
+
+const BASE = "/blog/home";
+
+// CREATE
+export const createBlog = async (data: Partial<LisBlogResponse>) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// UPDATE
+export const updateBlog = async (
+  data: Partial<LisBlogResponse> & { _id: string }
+) => {
+  try {
+    const res = await axiosInstance.patch("/blog/section", data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// DELETE
+export const deleteBlog = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`${BASE}/${id}`);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};

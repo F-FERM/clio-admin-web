@@ -25,17 +25,17 @@ interface PillarCard {
   textColor: string;
   descColor: string;
   backgroundImage: string;
-  _id: string;
+  _id?: string;
 }
 
 interface Principle {
   title: string;
   description?: string;
   isHighlighted: boolean;
-  _id: string;
+  _id?: string;
 }
 
 interface ComplianceItem {
   text: string;
-  _id: string;
+  _id?: string;
 }

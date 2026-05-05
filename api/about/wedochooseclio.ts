@@ -38,3 +38,39 @@ export const ListWedoChooseClioApi = async (data: {
     throw error;
   }
 };
+
+const BASE = "/what-we-do";
+
+// CREATE
+export const createWedoChooseClio = async (
+  data: Partial<WhatWeDoWhyChooseClio>
+) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// UPDATE
+export const updateWedoChooseClio = async (
+  data: Partial<WhatWeDoWhyChooseClio> & { _id: string }
+) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// DELETE
+export const deleteWedoChooseClio = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`${BASE}/${id}`);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};

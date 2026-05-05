@@ -39,3 +39,37 @@ export const ListGlobalNetworkApi = async (data: {
     throw error;
   }
 };
+
+const BASE = "/global-network";
+
+// CREATE
+export const createGlobalNetwork = async (data: Partial<ListGlobalNetworkResponse>) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// UPDATE
+export const updateGlobalNetwork = async (
+  data: Partial<ListGlobalNetworkResponse> & { _id: string }
+) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// DELETE
+export const deleteGlobalNetwork = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`${BASE}/${id}`);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};

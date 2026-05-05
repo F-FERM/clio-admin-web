@@ -38,3 +38,37 @@ export const ListAboutHeroSectionApi = async (data: {
     throw error;
   }
 };
+
+const BASE = "/about-section";
+
+// CREATE
+export const createAboutHero = async (data: Partial<ListAboutHeroSection>) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// UPDATE
+export const updateAboutHero = async (
+  data: Partial<ListAboutHeroSection> & { _id: string }
+) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// DELETE
+export const deleteAboutHero = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`${BASE}/${id}`);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};

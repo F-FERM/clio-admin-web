@@ -40,3 +40,37 @@ export const ListCareerApi = async (data: {
     throw error;
   }
 };
+
+const BASE = "/career/page";
+
+// CREATE
+export const createCareer = async (data: Partial<ListCareerResponse>) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// UPDATE
+export const updateCareer = async (
+  data: Partial<ListCareerResponse> & { _id: string }
+) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// DELETE
+export const deleteCareer = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`${BASE}/${id}`);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};

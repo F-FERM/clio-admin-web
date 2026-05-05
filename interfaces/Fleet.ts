@@ -19,7 +19,7 @@ export interface ListFleetResponse {
 interface Benefit {
   title: string;
   description: string;
-  _id: string;
+  _id?: string;
 }
 
 interface Card {
@@ -27,11 +27,11 @@ interface Card {
   tag: string;
   image: string;
   hoverText: string;
-  _id: string;
+  _id?: string;
 }
 
 interface Stat {
   label: string;
   value: string;
-  _id: string;
+  _id?: string;
 }

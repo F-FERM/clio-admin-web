@@ -15,7 +15,7 @@ export interface ListCareerResponse {
 }
 
 interface Job {
-  _id: string;
+  _id?: string;
   title: string;
   description: string;
   location: string;
@@ -29,5 +29,5 @@ interface Job {
 interface WhyItem {
   title: string;
   description: string;
-  _id: string;
+  _id?: string;
 }
