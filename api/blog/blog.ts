@@ -1,5 +1,8 @@
-
-import { LisBlogResponse } from "@/interfaces/Blog";
+import {
+  Card,
+  LisBlogResponse,
+  UpdateBlogSectionPayload,
+} from "@/interfaces/Blog";
 import { ListFaqSection } from "@/interfaces/Home";
 import axiosInstance from "@/service/axios";
 import { AxiosError } from "axios";
@@ -29,10 +32,15 @@ export const ListBlogApi = async (data: {
   } catch (error) {
     if (error instanceof AxiosError) {
       const apiError = error.response?.data;
-      const errorMessage = apiError?.error || apiError?.message || error.message || "An unexpected error occurred";
+      const errorMessage =
+        apiError?.error ||
+        apiError?.message ||
+        error.message ||
+        "An unexpected error occurred";
       const normalizedError = new Error(errorMessage);
 
-      (normalizedError as any).statusCode = apiError?.statusCode || error.response?.status;
+      (normalizedError as any).statusCode =
+        apiError?.statusCode || error.response?.status;
       (normalizedError as any).raw = apiError;
 
       throw normalizedError;
@@ -56,10 +64,20 @@ export const createBlog = async (data: Partial<LisBlogResponse>) => {
 // UPDATE
 export const updateBlog = async (
   id: string,
-  data: Partial<LisBlogResponse>
+  data: Partial<LisBlogResponse>,
 ) => {
   try {
     const res = await axiosInstance.patch(`/blog/section`, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// UPDATE BLOG SECTION (Cards)
+export const updateBlogSection = async (cards: Card[]) => {
+  try {
+    const res = await axiosInstance.patch(`/blog/section`, { section: cards });
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;

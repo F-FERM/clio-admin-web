@@ -8,9 +8,14 @@ import { Plus, Trash2, Edit } from "lucide-react";
 type Props = {
   initialData?: Partial<LisBlogResponse>;
   onSubmit: (data: any) => Promise<void>;
+  onBlogSectionSubmit?: (cards: any[]) => Promise<void>;
 };
 
-export default function BlogLandingForm({ initialData, onSubmit }: Props) {
+export default function BlogLandingForm({
+  initialData,
+  onSubmit,
+  onBlogSectionSubmit,
+}: Props) {
   const [form, setForm] = useState<Partial<LisBlogResponse>>(
     initialData || {
       heroTitle: "",
@@ -24,8 +29,10 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
       rightText: "",
       rightImage: "",
       cards: [],
-    }
+    },
   );
+
+  const [blogSectionLoading, setBlogSectionLoading] = useState(false);
 
   const handleChange = (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
@@ -62,7 +69,9 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
     e.preventDefault();
     const payload = {
       ...form,
-      cards: form.cards?.map(({ _id, __v, createdAt, updatedAt, ...rest }: any) => rest),
+      cards: form.cards?.map(
+        ({ _id, __v, createdAt, updatedAt, ...rest }: any) => rest,
+      ),
     };
 
     // Remove metadata fields from the top-level payload
@@ -71,14 +80,39 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
     await onSubmit(cleanPayload);
   };
 
+  const submitBlogSection = async (e: any) => {
+    e.preventDefault();
+    if (!onBlogSectionSubmit) {
+      alert("Blog section submission handler not configured");
+      return;
+    }
+
+    setBlogSectionLoading(true);
+    try {
+      const cleanCards =
+        form.cards?.map(
+          ({ _id, __v, createdAt, updatedAt, ...rest }: any) => rest,
+        ) || [];
+      await onBlogSectionSubmit(cleanCards);
+    } catch (err) {
+      console.error("Blog section submit error:", err);
+    } finally {
+      setBlogSectionLoading(false);
+    }
+  };
+
   return (
     <form onSubmit={submit} className="space-y-10 max-w-5xl">
       {/* Hero Section */}
       <div className="space-y-6 bg-white p-6 rounded-xl border shadow-sm">
-        <h3 className="text-xl font-bold border-b pb-3 text-gray-800">Hero Section</h3>
+        <h3 className="text-xl font-bold border-b pb-3 text-gray-800">
+          Hero Section
+        </h3>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Hero Title</label>
+            <label className="text-sm font-medium text-gray-700">
+              Hero Title
+            </label>
             <input
               className="input"
               placeholder="Enter hero title"
@@ -87,7 +121,9 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
             />
           </div>
           <div className="space-y-2">
-            <label className="text-sm font-medium text-gray-700">Hero Subtitle</label>
+            <label className="text-sm font-medium text-gray-700">
+              Hero Subtitle
+            </label>
             <input
               className="input"
               placeholder="Enter hero subtitle"
@@ -105,9 +141,13 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
 
       {/* Main Content Section */}
       <div className="space-y-6 bg-white p-6 rounded-xl border shadow-sm">
-        <h3 className="text-xl font-bold border-b pb-3 text-gray-800">Main Content</h3>
+        <h3 className="text-xl font-bold border-b pb-3 text-gray-800">
+          Main Content
+        </h3>
         <div className="space-y-2">
-          <label className="text-sm font-medium text-gray-700">Main Heading</label>
+          <label className="text-sm font-medium text-gray-700">
+            Main Heading
+          </label>
           <input
             className="input"
             placeholder="Enter main heading"
@@ -118,7 +158,9 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4">
           <div className="space-y-4 p-4 bg-gray-50 rounded-lg border">
-            <h4 className="font-bold text-gray-700 uppercase text-xs tracking-wider">Left Column</h4>
+            <h4 className="font-bold text-gray-700 uppercase text-xs tracking-wider">
+              Left Column
+            </h4>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Title</label>
               <input
@@ -129,7 +171,9 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Text Content</label>
+              <label className="text-sm font-medium text-gray-700">
+                Text Content
+              </label>
               <textarea
                 className="input bg-white min-h-[120px]"
                 placeholder="Left text content"
@@ -145,7 +189,9 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
           </div>
 
           <div className="space-y-4 p-4 bg-gray-50 rounded-lg border">
-            <h4 className="font-bold text-gray-700 uppercase text-xs tracking-wider">Right Column</h4>
+            <h4 className="font-bold text-gray-700 uppercase text-xs tracking-wider">
+              Right Column
+            </h4>
             <div className="space-y-2">
               <label className="text-sm font-medium text-gray-700">Title</label>
               <input
@@ -156,7 +202,9 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
               />
             </div>
             <div className="space-y-2">
-              <label className="text-sm font-medium text-gray-700">Text Content</label>
+              <label className="text-sm font-medium text-gray-700">
+                Text Content
+              </label>
               <textarea
                 className="input bg-white min-h-[120px]"
                 placeholder="Right text content"
@@ -176,19 +224,36 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
       {/* Blog Cards Section */}
       <div className="space-y-6 bg-white p-6 rounded-xl border shadow-sm">
         <div className="flex justify-between items-center border-b pb-3">
-          <h3 className="text-xl font-bold text-gray-800">Blog Posts (Cards)</h3>
-          <button
-            type="button"
-            onClick={addCard}
-            className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold shadow-sm"
-          >
-            <Plus size={18} /> Add Post
-          </button>
+          <h3 className="text-xl font-bold text-gray-800">
+            Blog Posts (Cards)
+          </h3>
+          <div className="flex gap-2">
+            <button
+              type="button"
+              onClick={addCard}
+              className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors text-sm font-semibold shadow-sm"
+            >
+              <Plus size={18} /> Add Post
+            </button>
+            {onBlogSectionSubmit && (
+              <button
+                type="button"
+                onClick={submitBlogSection}
+                disabled={blogSectionLoading}
+                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {blogSectionLoading ? "Saving..." : "Save Blog Section"}
+              </button>
+            )}
+          </div>
         </div>
 
         <div className="space-y-8">
           {form.cards?.map((card, index) => (
-            <div key={card._id || index} className="p-6 border rounded-xl bg-gray-50 relative group shadow-inner">
+            <div
+              key={card._id || index}
+              className="p-6 border rounded-xl bg-gray-50 relative group shadow-inner"
+            >
               <button
                 type="button"
                 onClick={() => removeCard(index)}
@@ -201,50 +266,74 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Post Title</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      Post Title
+                    </label>
                     <input
                       className="input bg-white"
                       placeholder="Post title"
                       value={card.title}
-                      onChange={(e) => handleCardChange(index, "title", e.target.value)}
+                      onChange={(e) =>
+                        handleCardChange(index, "title", e.target.value)
+                      }
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Category (Tag)</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        Category (Tag)
+                      </label>
                       <input
                         className="input bg-white"
                         placeholder="e.g. Maritime"
                         value={card.tag}
-                        onChange={(e) => handleCardChange(index, "tag", e.target.value)}
+                        onChange={(e) =>
+                          handleCardChange(index, "tag", e.target.value)
+                        }
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Tags (comma separated)</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        Tags (comma separated)
+                      </label>
                       <input
                         className="input bg-white"
                         placeholder="tag1, tag2, tag3"
                         value={card.tags?.join(", ")}
-                        onChange={(e) => handleCardChange(index, "tags", e.target.value.split(",").map(t => t.trim()))}
+                        onChange={(e) =>
+                          handleCardChange(
+                            index,
+                            "tags",
+                            e.target.value.split(",").map((t) => t.trim()),
+                          )
+                        }
                       />
                     </div>
                     <div className="space-y-2">
-                      <label className="text-sm font-medium text-gray-700">Date</label>
+                      <label className="text-sm font-medium text-gray-700">
+                        Date
+                      </label>
                       <input
                         className="input bg-white"
                         type="date"
                         value={card.date}
-                        onChange={(e) => handleCardChange(index, "date", e.target.value)}
+                        onChange={(e) =>
+                          handleCardChange(index, "date", e.target.value)
+                        }
                       />
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Short Description</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      Short Description
+                    </label>
                     <textarea
                       className="input bg-white min-h-[80px]"
                       placeholder="Summary of the post"
                       value={card.description}
-                      onChange={(e) => handleCardChange(index, "description", e.target.value)}
+                      onChange={(e) =>
+                        handleCardChange(index, "description", e.target.value)
+                      }
                     />
                   </div>
                   <div className="flex items-center gap-2 pt-2">
@@ -253,9 +342,14 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
                       id={`isPublished-${index}`}
                       className="w-4 h-4 text-blue-600 rounded"
                       checked={card.isPublished}
-                      onChange={(e) => handleCardChange(index, "isPublished", e.target.checked)}
+                      onChange={(e) =>
+                        handleCardChange(index, "isPublished", e.target.checked)
+                      }
                     />
-                    <label htmlFor={`isPublished-${index}`} className="text-sm font-medium text-gray-700 cursor-pointer">
+                    <label
+                      htmlFor={`isPublished-${index}`}
+                      className="text-sm font-medium text-gray-700 cursor-pointer"
+                    >
                       Published
                     </label>
                   </div>
@@ -263,12 +357,16 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
 
                 <div className="space-y-4">
                   <div className="space-y-2">
-                    <label className="text-sm font-medium text-gray-700">Full Content</label>
+                    <label className="text-sm font-medium text-gray-700">
+                      Full Content
+                    </label>
                     <textarea
                       className="input bg-white min-h-[200px]"
                       placeholder="Article content"
                       value={card.content}
-                      onChange={(e) => handleCardChange(index, "content", e.target.value)}
+                      onChange={(e) =>
+                        handleCardChange(index, "content", e.target.value)
+                      }
                     />
                   </div>
                   <ImageUpload

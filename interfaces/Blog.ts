@@ -17,7 +17,7 @@ export interface LisBlogResponse {
 }
 
 export interface Card {
-  _id?: string;
+  _id: string;
   title: string;
   description: string;
   content: string;
@@ -29,4 +29,9 @@ export interface Card {
   __v: number;
   createdAt: string;
   updatedAt: string;
+}
+
+export interface UpdateBlogSectionPayload {
+  section?: Card[];
+  [key: string]: any;
 }
