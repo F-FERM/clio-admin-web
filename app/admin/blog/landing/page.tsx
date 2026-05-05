@@ -28,7 +28,7 @@ export default function BlogLandingPage() {
   const handleSubmit = async (formData: any) => {
     try {
       if (data?._id) {
-        await updateBlog({ ...formData, _id: data._id });
+        await updateBlog(data._id, formData);
         alert("Blog landing page updated successfully!");
       } else {
         await createBlog(formData);

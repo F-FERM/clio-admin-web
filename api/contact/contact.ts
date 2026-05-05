@@ -44,7 +44,7 @@ const BASE = "/contact";
 // CREATE
 export const createContact = async (data: Partial<ListContactResponse>) => {
   try {
-    const res = await axiosInstance.patch(BASE, data);
+    const res = await axiosInstance.patch("/contact/section", data);
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;
@@ -53,10 +53,11 @@ export const createContact = async (data: Partial<ListContactResponse>) => {
 
 // UPDATE
 export const updateContact = async (
-  data: Partial<ListContactResponse> & { _id: string }
+  id: string,
+  data: Partial<ListContactResponse>
 ) => {
   try {
-    const res = await axiosInstance.patch(BASE, data);
+    const res = await axiosInstance.patch("/contact/section", data);
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;

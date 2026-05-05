@@ -26,7 +26,7 @@ export default function EditServicePage() {
 
   const handleSubmit = async (form: any) => {
     try {
-      await updateService({ ...form, _id: id as string });
+      await updateService(id as string, form);
       router.push("/admin/home/our-services");
     } catch (err) {
       console.error("Update error:", err);

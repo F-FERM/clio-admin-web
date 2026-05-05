@@ -24,6 +24,7 @@ interface Feature {
 interface SmartImage {
   image: string;
   title?: string;
+  description?: string;
   _id?: string;
 }
 

@@ -58,7 +58,7 @@ export const updateCareer = async (
   data: Partial<ListCareerResponse> & { _id: string }
 ) => {
   try {
-    const res = await axiosInstance.patch(BASE, data);
+    const res = await axiosInstance.patch("/career/section", data);
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;

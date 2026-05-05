@@ -55,10 +55,11 @@ export const createBlog = async (data: Partial<LisBlogResponse>) => {
 
 // UPDATE
 export const updateBlog = async (
-  data: Partial<LisBlogResponse> & { _id: string }
+  id: string,
+  data: Partial<LisBlogResponse>
 ) => {
   try {
-    const res = await axiosInstance.patch("/blog/section", data);
+    const res = await axiosInstance.patch(`/blog/section`, data);
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;

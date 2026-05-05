@@ -22,7 +22,7 @@ export const createService = async (data: Partial<ListOurService>) => {
   }
 };
 
-export const updateService = async (data: Partial<ListOurService> & { _id: string }) => {
+export const updateService = async (id: string, data: Partial<ListOurService>) => {
   try {
     const res = await axiosInstance.patch(BASE, data);
     return res.data;

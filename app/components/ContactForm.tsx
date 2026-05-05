@@ -50,9 +50,13 @@ export default function ContactForm({ initialData, onSubmit }: Props) {
     e.preventDefault();
     const payload = {
       ...form,
-      contactInfo: form.contactInfo?.map(({ _id, ...rest }) => rest),
+      contactInfo: form.contactInfo?.map(({ _id, __v, createdAt, updatedAt, ...rest }: any) => rest),
     };
-    await onSubmit(payload);
+
+    // Remove metadata fields from the top-level payload
+    const { _id, __v, createdAt, updatedAt, ...cleanPayload } = payload as any;
+
+    await onSubmit(cleanPayload);
   };
 
   return (

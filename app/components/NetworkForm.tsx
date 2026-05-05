@@ -38,7 +38,7 @@ export default function NetworkForm({ initialData, onSubmit }: Props) {
 
   const addItem = (arrayKey: "smartImages" | "features") => {
     const newItem = arrayKey === "smartImages" 
-      ? { image: "", title: "", _id: Date.now().toString() }
+      ? { image: "", title: "", description: "", _id: Date.now().toString() }
       : { title: "", points: [], variant: "default", _id: Date.now().toString() };
     handleChange(arrayKey, [...(form[arrayKey] || []), newItem]);
   };
@@ -178,6 +178,12 @@ export default function NetworkForm({ initialData, onSubmit }: Props) {
                   placeholder="Image Title (Optional)"
                   value={img.title || ""}
                   onChange={(e) => handleArrayItemChange("smartImages", index, "title", e.target.value)}
+                />
+                <textarea
+                  className="input bg-white mb-2 text-xs min-h-[60px]"
+                  placeholder="Image Description (Optional)"
+                  value={img.description || ""}
+                  onChange={(e) => handleArrayItemChange("smartImages", index, "description", e.target.value)}
                 />
                 <ImageUpload
                   label="Image"

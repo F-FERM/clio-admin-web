@@ -29,7 +29,7 @@ export default function ContactPage() {
   const handleSubmit = async (formData: any) => {
     try {
       if (data?._id) {
-        await updateContact({ ...formData, _id: data._id });
+        await updateContact(data._id, formData);
         alert("Contact section updated successfully!");
       } else {
         await createContact(formData);

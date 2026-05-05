@@ -44,7 +44,12 @@ export default function ServiceForm({ initialData, onSubmit }: Props) {
 
   const submit = async (e: any) => {
     e.preventDefault();
-    await onSubmit(form);
+    const payload = {
+      ...form,
+      cards: form.cards?.map(({ _id, __v, createdAt, updatedAt, ...rest }: any) => rest),
+    };
+    const { _id, __v, createdAt, updatedAt, ...cleanPayload } = payload as any;
+    await onSubmit(cleanPayload);
   };
 
   return (
