@@ -19,9 +19,10 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
       heading: "",
       leftTitle: "",
       leftText: "",
+      leftImage: "",
       rightTitle: "",
       rightText: "",
-      bottomImage: "",
+      rightImage: "",
       cards: [],
     }
   );
@@ -128,6 +129,11 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
                 onChange={(e) => handleChange("leftText", e.target.value)}
               />
             </div>
+            <ImageUpload
+              label="Left Image"
+              value={form.leftImage || ""}
+              onChange={(url) => handleChange("leftImage", url)}
+            />
           </div>
 
           <div className="space-y-4 p-4 bg-gray-50 rounded-lg border">
@@ -150,14 +156,13 @@ export default function BlogLandingForm({ initialData, onSubmit }: Props) {
                 onChange={(e) => handleChange("rightText", e.target.value)}
               />
             </div>
+            <ImageUpload
+              label="Right Image"
+              value={form.rightImage || ""}
+              onChange={(url) => handleChange("rightImage", url)}
+            />
           </div>
         </div>
-
-        <ImageUpload
-          label="Bottom Image"
-          value={form.bottomImage || ""}
-          onChange={(url) => handleChange("bottomImage", url)}
-        />
       </div>
 
       {/* Blog Cards Section */}

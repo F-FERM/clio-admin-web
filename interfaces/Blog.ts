@@ -6,16 +6,17 @@ export interface LisBlogResponse {
   heading: string;
   leftTitle: string;
   leftText: string;
+  leftImage: string;
   rightTitle: string;
   rightText: string;
-  bottomImage: string;
+  rightImage: string;
   createdAt: string;
   updatedAt: string;
   __v: number;
   cards: Card[];
 }
 
-interface Card {
+export interface Card {
   _id?: string;
   title: string;
   description: string;

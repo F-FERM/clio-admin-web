@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { LisBlogResponse } from "@/interfaces/Blog";
-import { ListBlogApi, updateBlog } from "@/api/blog/blog";
+import { ListBlogApi, updateBlog, createBlog } from "@/api/blog/blog";
 import BlogLandingForm from "@/app/components/BlogLandingForm";
 
 export default function BlogLandingPage() {
@@ -12,7 +12,8 @@ export default function BlogLandingPage() {
   const fetchData = async () => {
     try {
       const res = await ListBlogApi({});
-      setData(res);
+      const actualData = Array.isArray(res) ? res[0] : (res as any)?.data?.[0] || res;
+      setData(actualData);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -25,14 +26,18 @@ export default function BlogLandingPage() {
   }, []);
 
   const handleSubmit = async (formData: any) => {
-    if (!data?._id) return;
     try {
-      await updateBlog({ ...formData, _id: data._id });
-      alert("Blog landing page updated successfully!");
+      if (data?._id) {
+        await updateBlog({ ...formData, _id: data._id });
+        alert("Blog landing page updated successfully!");
+      } else {
+        await createBlog(formData);
+        alert("Blog landing page created successfully!");
+      }
       fetchData();
     } catch (err) {
-      console.error("Update error:", err);
-      alert("Failed to update blog landing page");
+      console.error("Submit error:", err);
+      alert("Failed to save blog landing page");
     }
   };
 
