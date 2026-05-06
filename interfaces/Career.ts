@@ -8,6 +8,7 @@ export interface ListCareerResponse {
   whoTitle: string;
   whoDescription: string;
   whoImage: string;
+  whoImage2: string;
   createdAt: string;
   updatedAt: string;
   __v: number;

@@ -21,6 +21,7 @@ export default function CareerForm({ initialData, onSubmit }: Props) {
       whoTitle: "",
       whoDescription: "",
       whoImage: "",
+      whoImage2: "",
       jobs: [],
     }
   );
@@ -150,11 +151,18 @@ export default function CareerForm({ initialData, onSubmit }: Props) {
           value={form.whoDescription || ""}
           onChange={(e) => handleChange("whoDescription", e.target.value)}
         />
-        <ImageUpload
-          label="Culture Image"
-          value={form.whoImage || ""}
-          onChange={(url) => handleChange("whoImage", url)}
-        />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <ImageUpload
+            label="Culture Image 1"
+            value={form.whoImage || ""}
+            onChange={(url) => handleChange("whoImage", url)}
+          />
+          <ImageUpload
+            label="Culture Image 2"
+            value={form.whoImage2 || ""}
+            onChange={(url) => handleChange("whoImage2", url)}
+          />
+        </div>
       </div>
 
       {/* Jobs Section */}
