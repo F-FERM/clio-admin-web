@@ -79,6 +79,13 @@ const sidebarItems = [
       { label: "Manage", href: "/admin/contact", icon: Image },
     ],
   },
+   {
+    label: "Footer",
+    icon: Briefcase,
+    children: [
+      { label: "Manage", href: "/admin/footer", icon: Image },
+    ],
+  },
 ];
 
 export default function Layout({ children }: { children: React.ReactNode }) {

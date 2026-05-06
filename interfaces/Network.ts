@@ -16,6 +16,7 @@ export interface ListGlobalNetworkResponse {
 
 interface Feature {
   title: string;
+  description:string;
   points: string[];
   variant: string;
   _id?: string;

@@ -37,9 +37,9 @@ export default function NetworkForm({ initialData, onSubmit }: Props) {
   };
 
   const addItem = (arrayKey: "smartImages" | "features") => {
-    const newItem = arrayKey === "smartImages" 
-      ? { image: "", title: "", description: "", _id: Date.now().toString() }
-      : { title: "", points: [], variant: "default", _id: Date.now().toString() };
+const newItem = arrayKey === "smartImages" 
+  ? { image: "", title: "", description: "", _id: Date.now().toString() }
+  : { title: "", description: "", points: [], variant: "default", _id: Date.now().toString() };
     handleChange(arrayKey, [...(form[arrayKey] || []), newItem]);
   };
 
@@ -209,39 +209,62 @@ export default function NetworkForm({ initialData, onSubmit }: Props) {
           </button>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {form.features?.map((feat, index) => (
-            <div key={feat._id || index} className="p-4 border rounded-xl bg-gray-50 relative group">
-              <button
-                type="button"
-                onClick={() => removeItem("features", index)}
-                className="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <Trash2 size={20} />
-              </button>
-              <div className="space-y-4">
-                <input
-                  className="input bg-white"
-                  placeholder="Feature Title"
-                  value={feat.title}
-                  onChange={(e) => handleArrayItemChange("features", index, "title", e.target.value)}
-                />
-                <input
-                  className="input bg-white"
-                  placeholder="Variant (e.g. blue, dark)"
-                  value={feat.variant}
-                  onChange={(e) => handleArrayItemChange("features", index, "variant", e.target.value)}
-                />
-                <textarea
-                  className="input bg-white min-h-[80px]"
-                  placeholder="Points (comma separated)"
-                  value={Array.isArray(feat.points) ? feat.points.join(", ") : feat.points || ""}
-                  onChange={(e) => handleArrayItemChange("features", index, "points", e.target.value.split(",").map(p => p.trim()))}
-                />
-              </div>
-            </div>
-          ))}
-        </div>
+       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+  {form.features?.map((feat, index) => (
+    <div key={feat._id || index} className="p-4 border rounded-xl bg-gray-50 relative group">
+      <button
+        type="button"
+        onClick={() => removeItem("features", index)}
+        className="absolute top-2 right-2 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
+      >
+        <Trash2 size={20} />
+      </button>
+
+      <div className="space-y-4">
+        <input
+          className="input bg-white"
+          placeholder="Feature Title"
+          value={feat.title}
+          onChange={(e) =>
+            handleArrayItemChange("features", index, "title", e.target.value)
+          }
+        />
+
+        <textarea
+          className="input bg-white min-h-[80px]"
+          placeholder="Feature Description"
+          value={feat.description || ""}
+          onChange={(e) =>
+            handleArrayItemChange("features", index, "description", e.target.value)
+          }
+        />
+
+        <input
+          className="input bg-white"
+          placeholder="Variant (e.g. blue, dark)"
+          value={feat.variant}
+          onChange={(e) =>
+            handleArrayItemChange("features", index, "variant", e.target.value)
+          }
+        />
+
+        <textarea
+          className="input bg-white min-h-[80px]"
+          placeholder="Points (comma separated)"
+          value={Array.isArray(feat.points) ? feat.points.join(", ") : feat.points || ""}
+          onChange={(e) =>
+            handleArrayItemChange(
+              "features",
+              index,
+              "points",
+              e.target.value.split(",").map((p) => p.trim())
+            )
+          }
+        />
+      </div>
+    </div>
+  ))}
+</div>
       </div>
 
       <button className="w-full px-4 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg sticky bottom-6 z-10">

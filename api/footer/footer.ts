@@ -3,6 +3,8 @@ import { ListFooterResponse } from "@/interfaces/Footer";
 import axiosInstance from "@/service/axios";
 import { AxiosError } from "axios";
 
+const BASE = "/footer";
+
 export const ListFooterApi = async (data: {
   search?: string;
   page?: number;
@@ -22,7 +24,7 @@ export const ListFooterApi = async (data: {
     }
 
     const response = await axiosInstance.get<ListFooterResponse>(
-      `/footer?${params.toString()}`,
+      `${BASE}?${params.toString()}`,
     );
     return response.data;
   } catch (error) {
@@ -37,5 +39,42 @@ export const ListFooterApi = async (data: {
       throw normalizedError;
     }
     throw error;
+  }
+};
+
+export const getFooter = async (): Promise<ListFooterResponse> => {
+  try {
+    const res = await axiosInstance.get(BASE);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+export const createFooter = async (data: Partial<ListFooterResponse>) => {
+  try {
+    const res = await axiosInstance.patch(BASE, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+export const updateFooter = async (data: Partial<ListFooterResponse> & { _id: string }) => {
+  try {
+    const { _id, ...payload } = data;
+    const res = await axiosInstance.patch(`${BASE}`, payload);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+export const deleteFooter = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`${BASE}/${id}`);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
   }
 };
