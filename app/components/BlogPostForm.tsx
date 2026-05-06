@@ -42,9 +42,33 @@ export default function BlogPostForm({ initialData, onSubmit }: Props) {
     handleChange("tags", value.split(",").map(t => t.trim()).filter(t => t !== ""));
   };
 
+  const formatDateForInput = (dateStr: string | undefined) => {
+    if (!dateStr) return "";
+    // If it's already YYYY-MM-DD, return it
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+      return dateStr.split("T")[0];
+    }
+    // If it's DD-MM-YYYY, convert it
+    const parts = dateStr.split("-");
+    if (parts.length === 3 && parts[2].length === 4) {
+      // Assuming DD-MM-YYYY
+      const [day, month, year] = parts;
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    }
+    // Fallback: try new Date()
+    try {
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        return d.toISOString().split("T")[0];
+      }
+    } catch (e) {}
+    return "";
+  };
+
   const submit = async (e: any) => {
     e.preventDefault();
-    await onSubmit(form);
+    const { isPublished, ...payload } = form;
+    await onSubmit(payload);
   };
 
   return (
@@ -62,7 +86,7 @@ export default function BlogPostForm({ initialData, onSubmit }: Props) {
           <input
             className="input"
             type="date"
-            value={form.date || ""}
+            value={formatDateForInput(form.date)}
             onChange={(e) => handleChange("date", e.target.value)}
           />
         </div>
@@ -96,18 +120,6 @@ export default function BlogPostForm({ initialData, onSubmit }: Props) {
           onChange={(e) => handleChange("content", e.target.value)}
         />
 
-        <div className="flex items-center gap-2">
-          <input
-            type="checkbox"
-            id="isPublished"
-            className="w-4 h-4 text-blue-600"
-            checked={form.isPublished || false}
-            onChange={(e) => handleChange("isPublished", e.target.checked)}
-          />
-          <label htmlFor="isPublished" className="text-sm font-medium text-gray-700">
-            Published
-          </label>
-        </div>
 
         <ImageUpload
           label="Feature Image"

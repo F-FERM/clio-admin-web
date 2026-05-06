@@ -25,7 +25,6 @@ export interface Card {
   tag: string;
   tags: string[];
   date: string;
-  isPublished: boolean;
   __v: number;
   createdAt: string;
   updatedAt: string;

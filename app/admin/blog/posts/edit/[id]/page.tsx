@@ -2,25 +2,23 @@
 
 import { useEffect, useState, use } from "react";
 import { useRouter } from "next/navigation";
-import { ListBlogApi, updateBlog } from "@/api/blog/blog";
+import { ListBlogSectionApi, updateBlog } from "@/api/blog/blog";
 import BlogPostForm from "@/app/components/BlogPostForm";
-import { LisBlogResponse } from "@/interfaces/Blog";
+import { Card } from "@/interfaces/Blog";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
 
 export default function EditBlogPostPage({ params }: { params: Promise<{ id: string }> }) {
   const router = useRouter();
   const { id } = use(params);
-  const [data, setData] = useState<LisBlogResponse | null>(null);
-  const [post, setPost] = useState<any | null>(null);
+  const [post, setPost] = useState<Card | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const res = await ListBlogApi({});
-        setData(res);
-        const item = res.cards.find((x: any) => x._id === id);
+        const res = await ListBlogSectionApi({});
+        const item = res.find((x: Card) => x._id === id);
         if (item) {
           setPost(item);
         } else {
@@ -37,12 +35,8 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
   }, [id, router]);
 
   const handleSubmit = async (postData: any) => {
-    if (!data) return;
     try {
-      const updatedCards = data.cards.map((c: any) => 
-        c._id === id ? { ...postData, _id: id } : c
-      );
-      await updateBlog({ ...data, cards: updatedCards, _id: data._id });
+      await updateBlog(id, postData);
       router.push("/admin/blog/posts");
     } catch (err) {
       console.error("Update error:", err);
@@ -77,3 +71,4 @@ export default function EditBlogPostPage({ params }: { params: Promise<{ id: str
     </div>
   );
 }
+      

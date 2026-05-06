@@ -37,7 +37,8 @@ export default function HeroForm({ initialData, onSubmit }: Props) {
 
   const submit = async (e: any) => {
     e.preventDefault();
-    await onSubmit(form);
+    const { _id, createdAt, updatedAt, __v, ...cleanPayload } = form as any;
+    await onSubmit(cleanPayload);
   };
 
   return (

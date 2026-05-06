@@ -8,13 +8,13 @@ import { Plus, Trash2, Edit } from "lucide-react";
 type Props = {
   initialData?: Partial<LisBlogResponse>;
   onSubmit: (data: any) => Promise<void>;
-  onBlogSectionSubmit?: (cards: any[]) => Promise<void>;
+  onIndividualCardUpdate?: (id: string, data: any) => Promise<void>;
 };
 
 export default function BlogLandingForm({
   initialData,
   onSubmit,
-  onBlogSectionSubmit,
+  onIndividualCardUpdate,
 }: Props) {
   const [form, setForm] = useState<Partial<LisBlogResponse>>(
     initialData || {
@@ -67,35 +67,55 @@ export default function BlogLandingForm({
 
   const submit = async (e: any) => {
     e.preventDefault();
-    const payload = {
-      ...form,
-      cards: form.cards?.map(
-        ({ _id, __v, createdAt, updatedAt, ...rest }: any) => rest,
-      ),
-    };
-
-    // Remove metadata fields from the top-level payload
-    const { _id, __v, createdAt, updatedAt, ...cleanPayload } = payload as any;
-
+    // Exclude cards from the main payload as they are updated individually
+    const { _id, __v, createdAt, updatedAt, cards, ...cleanPayload } = form as any;
     await onSubmit(cleanPayload);
   };
 
-  const submitBlogSection = async (e: any) => {
-    e.preventDefault();
-    if (!onBlogSectionSubmit) {
-      alert("Blog section submission handler not configured");
+  const formatDateForInput = (dateStr: string | undefined) => {
+    if (!dateStr) return "";
+    if (/^\d{4}-\d{2}-\d{2}/.test(dateStr)) {
+      return dateStr.split("T")[0];
+    }
+    const parts = dateStr.split("-");
+    if (parts.length === 3 && parts[2].length === 4) {
+      const [day, month, year] = parts;
+      return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
+    }
+    try {
+      const d = new Date(dateStr);
+      if (!isNaN(d.getTime())) {
+        return d.toISOString().split("T")[0];
+      }
+    } catch (e) {}
+    return "";
+  };
+
+  const updateCard = async (index: number) => {
+    console.log("Update card clicked for index:", index);
+    const card = (form.cards || [])[index];
+    if (!card || !card._id) {
+      alert("Cannot update a card without an ID. Save the landing page first if it's new.");
       return;
     }
-
+    
     setBlogSectionLoading(true);
     try {
-      const cleanCards =
-        form.cards?.map(
-          ({ _id, __v, createdAt, updatedAt, ...rest }: any) => rest,
-        ) || [];
-      await onBlogSectionSubmit(cleanCards);
+      const cleanCard = {
+        title: card.title,
+        description: card.description,
+        content: card.content,
+        image: card.image,
+        tag: card.tag,
+        tags: card.tags,
+        date: card.date
+      };
+      
+      if (onIndividualCardUpdate) {
+        await onIndividualCardUpdate(card._id, cleanCard);
+      }
     } catch (err) {
-      console.error("Blog section submit error:", err);
+      console.error("Card update error:", err);
     } finally {
       setBlogSectionLoading(false);
     }
@@ -235,16 +255,6 @@ export default function BlogLandingForm({
             >
               <Plus size={18} /> Add Post
             </button>
-            {onBlogSectionSubmit && (
-              <button
-                type="button"
-                onClick={submitBlogSection}
-                disabled={blogSectionLoading}
-                className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {blogSectionLoading ? "Saving..." : "Save Blog Section"}
-              </button>
-            )}
           </div>
         </div>
 
@@ -254,14 +264,24 @@ export default function BlogLandingForm({
               key={card._id || index}
               className="p-6 border rounded-xl bg-gray-50 relative group shadow-inner"
             >
-              <button
-                type="button"
-                onClick={() => removeCard(index)}
-                className="absolute top-4 right-4 text-red-500 hover:text-red-700 transition-colors p-2 hover:bg-red-50 rounded-full"
-                title="Remove Post"
-              >
-                <Trash2 size={20} />
-              </button>
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateCard(index)}
+                  className="text-blue-600 hover:text-blue-800 transition-colors p-2 hover:bg-blue-50 rounded-full"
+                  title="Update Individual Card"
+                >
+                  <Edit size={20} />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeCard(index)}
+                  className="text-red-500 hover:text-red-700 transition-colors p-2 hover:bg-red-50 rounded-full"
+                  title="Remove Post"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 <div className="space-y-4">
@@ -316,7 +336,7 @@ export default function BlogLandingForm({
                       <input
                         className="input bg-white"
                         type="date"
-                        value={card.date}
+                        value={formatDateForInput(card.date)}
                         onChange={(e) =>
                           handleCardChange(index, "date", e.target.value)
                         }
@@ -335,23 +355,6 @@ export default function BlogLandingForm({
                         handleCardChange(index, "description", e.target.value)
                       }
                     />
-                  </div>
-                  <div className="flex items-center gap-2 pt-2">
-                    <input
-                      type="checkbox"
-                      id={`isPublished-${index}`}
-                      className="w-4 h-4 text-blue-600 rounded"
-                      checked={card.isPublished}
-                      onChange={(e) =>
-                        handleCardChange(index, "isPublished", e.target.checked)
-                      }
-                    />
-                    <label
-                      htmlFor={`isPublished-${index}`}
-                      className="text-sm font-medium text-gray-700 cursor-pointer"
-                    >
-                      Published
-                    </label>
                   </div>
                 </div>
 

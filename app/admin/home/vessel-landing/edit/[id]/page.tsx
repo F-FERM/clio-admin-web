@@ -26,7 +26,7 @@ export default function EditHeroPage() {
   }, [id]);
 
   const handleSubmit = async (form: any) => {
-    await updateHero({ ...form, _id: id as string });
+    await updateHero(id as string, form);
     router.push("/admin/home/vessel-landing");
   };
 

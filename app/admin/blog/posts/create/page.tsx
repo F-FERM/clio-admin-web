@@ -1,35 +1,17 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { ListBlogApi, updateBlog } from "@/api/blog/blog";
+import { createBlogPost } from "@/api/blog/blog";
 import BlogPostForm from "@/app/components/BlogPostForm";
 import { ArrowLeft } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { LisBlogResponse } from "@/interfaces/Blog";
 
 export default function CreateBlogPostPage() {
   const router = useRouter();
-  const [data, setData] = useState<LisBlogResponse | null>(null);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const res = await ListBlogApi({});
-        setData(res);
-      } catch (err) {
-        console.error("Fetch error:", err);
-      }
-    };
-    fetchData();
-  }, []);
 
   const handleSubmit = async (postData: any) => {
-    if (!data) return;
     try {
-      const newPost = { ...postData, _id: Date.now().toString() };
-      const updatedCards = [newPost, ...(data.cards || [])];
-      await updateBlog({ ...data, cards: updatedCards, _id: data._id });
+      await createBlogPost(postData);
       router.push("/admin/blog/posts");
     } catch (err) {
       console.error("Create error:", err);

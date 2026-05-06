@@ -26,9 +26,10 @@ export const createHero = async (
   }
 };
 
-// UPDATE (PATCH — ID in body)
+// UPDATE
 export const updateHero = async (
-  data: Partial<ListVesselLanding> & { _id: string }
+  id: string,
+  data: Partial<ListVesselLanding>
 ) => {
   try {
     const res = await axiosInstance.patch(BASE, data);

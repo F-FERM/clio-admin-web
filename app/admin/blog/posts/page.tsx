@@ -2,18 +2,19 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { LisBlogResponse } from "@/interfaces/Blog";
-import { ListBlogApi, updateBlog } from "@/api/blog/blog";
+import { Card } from "@/interfaces/Blog";
+import { ListBlogSectionApi, updateBlog, deleteBlog } from "@/api/blog/blog";
 import { Plus, Edit, Trash2, Calendar, Tag } from "lucide-react";
 
 export default function BlogPostsPage() {
-  const [data, setData] = useState<LisBlogResponse | null>(null);
+  const [data, setData] = useState<Card[]>([]);
   const [loading, setLoading] = useState(true);
 
   const fetchData = async () => {
     try {
-      const res = await ListBlogApi({});
-      setData(res);
+      const res = await ListBlogSectionApi({});
+      const actualData = Array.isArray(res) ? res : (res as any)?.data || [];
+      setData(actualData);
     } catch (err) {
       console.error("Fetch error:", err);
     } finally {
@@ -26,11 +27,10 @@ export default function BlogPostsPage() {
   }, []);
 
   const handleDelete = async (postId: string) => {
-    if (!data || !confirm("Are you sure you want to delete this blog post?")) return;
+    if (!confirm("Are you sure you want to delete this blog post?")) return;
     
     try {
-      const updatedCards = data.cards.filter(c => c._id !== postId);
-      await updateBlog({ ...data, cards: updatedCards, _id: data._id });
+      await deleteBlog(postId);
       alert("Post deleted!");
       fetchData();
     } catch (err) {
@@ -63,19 +63,14 @@ export default function BlogPostsPage() {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {data?.cards && data.cards.length > 0 ? (
-          data.cards.map((post) => (
+        {data && data.length > 0 ? (
+          data.map((post) => (
             <div key={post._id} className="bg-white rounded-xl shadow-sm border overflow-hidden flex flex-col group">
               <div className="relative h-48 w-full bg-gray-100 overflow-hidden">
                 {post.image ? (
                   <img src={post.image} alt={post.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                 ) : (
                   <div className="w-full h-full flex items-center justify-center text-gray-400 font-medium">No Image</div>
-                )}
-                {!post.isPublished && (
-                  <div className="absolute top-2 right-2 px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-bold rounded shadow-sm">
-                    DRAFT
-                  </div>
                 )}
               </div>
               

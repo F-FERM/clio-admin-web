@@ -6,6 +6,20 @@ import {
 import { ListFaqSection } from "@/interfaces/Home";
 import axiosInstance from "@/service/axios";
 import { AxiosError } from "axios";
+export interface ListBlogSection {
+  _id: string;
+  title: string;
+  description: string;
+  content: string;
+  image: string;
+  tag: string;
+  tags: string[];
+  date: string;
+  isPublished: boolean;
+  __v: number;
+  createdAt: string;
+  updatedAt: string;
+}
 
 export const ListBlogApi = async (data: {
   search?: string;
@@ -25,8 +39,9 @@ export const ListBlogApi = async (data: {
       params.append("limit", limit.toString());
     }
 
+    const queryString = params.toString();
     const response = await axiosInstance.get<LisBlogResponse>(
-      `/blog/home?${params.toString()}`,
+      `blog/home${queryString ? `?${queryString}` : ""}`,
     );
     return response.data;
   } catch (error) {
@@ -48,13 +63,53 @@ export const ListBlogApi = async (data: {
     throw error;
   }
 };
+export const ListBlogSectionApi = async (data: {
+  search?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  const { search, page, limit } = data;
+  try {
+    const params = new URLSearchParams();
+    if (search) {
+      params.append("search", search);
+    }
+    if (page) {
+      params.append("page", page.toString());
+    }
+    if (limit) {
+      params.append("limit", limit.toString());
+    }
+
+    const queryString = params.toString();
+    const response = await axiosInstance.get<Card[]>(
+      `blog${queryString ? `?${queryString}` : ""}`,
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw error.response?.data || error.message;
+    }
+    throw error;
+  }
+};
 
 const BASE = "/blog/home";
 
 // CREATE
-export const createBlog = async (data: Partial<LisBlogResponse>) => {
+export const updateBlogHome = async (data: Partial<LisBlogResponse>) => {
   try {
-    const res = await axiosInstance.patch(BASE, data);
+    const res = await axiosInstance.patch(`blog/section`, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+// CREATE BLOG POST
+export const createBlogPost = async (data: any) => {
+  try {
+    const res = await axiosInstance.post(`blog`, data);
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;
@@ -64,20 +119,23 @@ export const createBlog = async (data: Partial<LisBlogResponse>) => {
 // UPDATE
 export const updateBlog = async (
   id: string,
-  data: Partial<LisBlogResponse>,
+  data: any,
 ) => {
   try {
-    const res = await axiosInstance.patch(`/blog/section`, data);
+    const url = `blog/${id}`;
+    console.log("Updating individual blog at:", url, "with data:", data);
+    const res = await axiosInstance.patch(url, data);
     return res.data;
   } catch (error) {
-    throw (error as AxiosError).response?.data;
+    console.error("Update individual blog error:", error);
+    throw (error as AxiosError).response?.data || (error as any).message;
   }
 };
 
 // UPDATE BLOG SECTION (Cards)
 export const updateBlogSection = async (cards: Card[]) => {
   try {
-    const res = await axiosInstance.patch(`/blog/section`, { section: cards });
+    const res = await axiosInstance.patch(`blog/section`, { section: cards });
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;
@@ -87,7 +145,7 @@ export const updateBlogSection = async (cards: Card[]) => {
 // DELETE
 export const deleteBlog = async (id: string) => {
   try {
-    const res = await axiosInstance.delete(`${BASE}/${id}`);
+    const res = await axiosInstance.delete(`blog/${id}`);
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;
