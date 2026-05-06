@@ -1,5 +1,5 @@
 
-import { ListCareerResponse } from "@/interfaces/Career";
+import { Job, ListCareerResponse } from "@/interfaces/Career";
 import { ListFaqSection } from "@/interfaces/Home";
 import axiosInstance from "@/service/axios";
 import { AxiosError } from "axios";
@@ -69,6 +69,63 @@ export const updateCareer = async (
 export const deleteCareer = async (id: string) => {
   try {
     const res = await axiosInstance.delete(`${BASE}/${id}`);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+// JOBS API
+export const ListJobsApi = async (data: {
+  search?: string;
+  page?: number;
+  limit?: number;
+}) => {
+  const { search, page, limit } = data;
+  try {
+    const params = new URLSearchParams();
+    if (search) {
+      params.append("search", search);
+    }
+    if (page) {
+      params.append("page", page.toString());
+    }
+    if (limit) {
+      params.append("limit", limit.toString());
+    }
+
+    const response = await axiosInstance.get<Job[]>(
+      `/career/jobs?${params.toString()}`,
+    );
+    return response.data;
+  } catch (error) {
+    if (error instanceof AxiosError) {
+      throw error.response?.data || error.message;
+    }
+    throw error;
+  }
+};
+
+export const createJob = async (data: any) => {
+  try {
+    const res = await axiosInstance.post(`/career/jobs`, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+export const updateJob = async (id: string, data: any) => {
+  try {
+    const res = await axiosInstance.patch(`/career/jobs/${id}`, data);
+    return res.data;
+  } catch (error) {
+    throw (error as AxiosError).response?.data;
+  }
+};
+
+export const deleteJob = async (id: string) => {
+  try {
+    const res = await axiosInstance.delete(`/career/jobs/${id}`);
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;

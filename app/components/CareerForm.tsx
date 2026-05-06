@@ -1,16 +1,23 @@
 "use client";
 
 import { useState } from "react";
-import { ListCareerResponse } from "@/interfaces/Career";
+import { ListCareerResponse, Job } from "@/interfaces/Career";
 import ImageUpload from "./ImageUpload";
-import { Plus, Trash2 } from "lucide-react";
+import { Plus, Trash2, Edit, Save } from "lucide-react";
 
 type Props = {
   initialData?: Partial<ListCareerResponse>;
   onSubmit: (data: any) => Promise<void>;
+  onIndividualJobUpdate?: (id: string, data: any) => Promise<void>;
+  onIndividualJobDelete?: (id: string) => Promise<void>;
 };
 
-export default function CareerForm({ initialData, onSubmit }: Props) {
+export default function CareerForm({ 
+  initialData, 
+  onSubmit,
+  onIndividualJobUpdate,
+  onIndividualJobDelete
+}: Props) {
   const [form, setForm] = useState<Partial<ListCareerResponse>>(
     initialData || {
       heading: "",
@@ -26,6 +33,8 @@ export default function CareerForm({ initialData, onSubmit }: Props) {
     }
   );
 
+  const [jobLoading, setJobLoading] = useState<string | null>(null);
+
   const handleChange = (key: string, value: any) => {
     setForm((prev) => ({ ...prev, [key]: value }));
   };
@@ -33,7 +42,7 @@ export default function CareerForm({ initialData, onSubmit }: Props) {
   const addItem = (arrayKey: "whyItems" | "jobs") => {
     const newItem = arrayKey === "whyItems" 
       ? { title: "", description: "", _id: Date.now().toString() }
-      : { title: "", description: "", location: "", type: "Full-time", isActive: true, _id: Date.now().toString() };
+      : { title: "", description: "", location: "", type: "Full-time", _id: Date.now().toString() };
     handleChange(arrayKey, [...(form[arrayKey] || []), newItem]);
   };
 
@@ -60,6 +69,44 @@ export default function CareerForm({ initialData, onSubmit }: Props) {
     };
 
     await onSubmit(payload);
+  };
+
+  const updateJobItem = async (index: number) => {
+    const job = (form.jobs || [])[index];
+    if (!job || !job._id) {
+      alert("Cannot update a job without an ID. Save the career page first if it's new.");
+      return;
+    }
+
+    setJobLoading(job._id);
+    try {
+      const cleanJob = {
+        title: job.title,
+        description: job.description,
+        location: job.location,
+        type: job.type,
+      };
+
+      if (onIndividualJobUpdate) {
+        await onIndividualJobUpdate(job._id, cleanJob);
+      }
+    } catch (err) {
+      console.error("Job update error:", err);
+    } finally {
+      setJobLoading(null);
+    }
+  };
+
+  const removeJobItem = async (index: number) => {
+    const job = (form.jobs || [])[index];
+    
+    if (job?._id && !job._id.toString().includes(Date.now().toString().substring(0, 5))) { // Basic check for real ID vs temp ID
+        if (onIndividualJobDelete) {
+            await onIndividualJobDelete(job._id);
+        }
+    }
+    
+    removeItem("jobs", index);
   };
 
   return (
@@ -168,7 +215,7 @@ export default function CareerForm({ initialData, onSubmit }: Props) {
       {/* Jobs Section */}
       <div className="space-y-6 bg-white p-6 rounded-xl border shadow-sm">
         <div className="flex justify-between items-center border-b pb-3">
-          <h3 className="text-xl font-bold text-gray-800">Open Positions</h3>
+          <h3 className="text-xl font-bold text-gray-800">Open Positions (Jobs)</h3>
           <button
             type="button"
             onClick={() => addItem("jobs")}
@@ -180,60 +227,82 @@ export default function CareerForm({ initialData, onSubmit }: Props) {
 
         <div className="space-y-6">
           {form.jobs?.map((job, index) => (
-            <div key={job._id || index} className="p-6 border rounded-xl bg-gray-50 relative group">
-              <button
-                type="button"
-                onClick={() => removeItem("jobs", index)}
-                className="absolute top-4 right-4 text-red-500 opacity-0 group-hover:opacity-100 transition-opacity"
-              >
-                <Trash2 size={20} />
-              </button>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div key={job._id || index} className="p-6 border rounded-xl bg-gray-50 relative group shadow-inner">
+              <div className="absolute top-4 right-4 flex gap-2">
+                <button
+                  type="button"
+                  onClick={() => updateJobItem(index)}
+                  className={`text-blue-600 hover:text-blue-800 transition-colors p-2 hover:bg-blue-50 rounded-full ${jobLoading === job._id ? 'animate-pulse' : ''}`}
+                  title="Update Individual Job"
+                  disabled={jobLoading === job._id}
+                >
+                  {jobLoading === job._id ? <Save size={20} className="animate-spin" /> : <Edit size={20} />}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => removeJobItem(index)}
+                  className="text-red-500 hover:text-red-700 transition-colors p-2 hover:bg-red-50 rounded-full"
+                  title="Remove Job"
+                >
+                  <Trash2 size={20} />
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4">
                 <div className="space-y-4">
-                  <input
-                    className="input bg-white"
-                    placeholder="Job Title"
-                    value={job.title}
-                    onChange={(e) => handleArrayItemChange("jobs", index, "title", e.target.value)}
-                  />
+                  <div className="space-y-1">
+                    <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Job Title</label>
+                    <input
+                      className="input bg-white"
+                      placeholder="e.g. Senior Software Engineer"
+                      value={job.title}
+                      onChange={(e) => handleArrayItemChange("jobs", index, "title", e.target.value)}
+                    />
+                  </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <input
-                      className="input bg-white"
-                      placeholder="Location"
-                      value={job.location}
-                      onChange={(e) => handleArrayItemChange("jobs", index, "location", e.target.value)}
-                    />
-                    <input
-                      className="input bg-white"
-                      placeholder="Type (e.g. Full-time)"
-                      value={job.type}
-                      onChange={(e) => handleArrayItemChange("jobs", index, "type", e.target.value)}
-                    />
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Location</label>
+                      <input
+                        className="input bg-white"
+                        placeholder="e.g. London, UK"
+                        value={job.location}
+                        onChange={(e) => handleArrayItemChange("jobs", index, "location", e.target.value)}
+                      />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Type</label>
+                      <input
+                        className="input bg-white"
+                        placeholder="e.g. Full-time"
+                        value={job.type}
+                        onChange={(e) => handleArrayItemChange("jobs", index, "type", e.target.value)}
+                      />
+                    </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id={`isActive-${index}`}
-                      checked={job.isActive}
-                      onChange={(e) => handleArrayItemChange("jobs", index, "isActive", e.target.checked)}
-                    />
-                    <label htmlFor={`isActive-${index}`} className="text-sm font-medium text-gray-700">Active / Accepting Applications</label>
-                  </div>
+
                 </div>
-                <textarea
-                  className="input bg-white min-h-[120px]"
-                  placeholder="Job Description / Requirements"
-                  value={job.description}
-                  onChange={(e) => handleArrayItemChange("jobs", index, "description", e.target.value)}
-                />
+                <div className="space-y-1">
+                  <label className="text-xs font-bold text-gray-500 uppercase tracking-wider">Job Description</label>
+                  <textarea
+                    className="input bg-white min-h-[140px]"
+                    placeholder="Provide details about the role and requirements..."
+                    value={job.description}
+                    onChange={(e) => handleArrayItemChange("jobs", index, "description", e.target.value)}
+                  />
+                </div>
               </div>
             </div>
           ))}
+          {(!form.jobs || form.jobs.length === 0) && (
+            <div className="text-center py-10 bg-gray-50 rounded-xl border border-dashed text-gray-500 italic">
+              No open positions added yet. Click "Add Job" to start.
+            </div>
+          )}
         </div>
       </div>
 
       <button className="w-full px-4 py-4 bg-blue-600 text-white rounded-xl font-bold text-lg hover:bg-blue-700 transition-all shadow-lg sticky bottom-6 z-10">
-        Update Career Page Section
+        Update Entire Career Page Section
       </button>
     </form>
   );

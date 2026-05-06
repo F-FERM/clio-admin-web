@@ -15,13 +15,12 @@ export interface ListCareerResponse {
   jobs: Job[];
 }
 
-interface Job {
+export interface Job {
   _id?: string;
   title: string;
   description: string;
   location: string;
   type: string;
-  isActive: boolean;
   __v: number;
   createdAt: string;
   updatedAt: string;
