@@ -44,7 +44,11 @@ export default function FaqForm({ initialData, onSubmit }: Props) {
 
   const submit = async (e: any) => {
     e.preventDefault();
-    await onSubmit(form);
+    // Sanitize payload: remove metadata and nested IDs
+    const { _id, createdAt, updatedAt, __v, items, ...cleanForm } = form as any;
+    const cleanItems = (items || []).map(({ _id, ...itemRest }: any) => itemRest);
+    
+    await onSubmit({ ...cleanForm, items: cleanItems });
   };
 
   return (

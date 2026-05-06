@@ -26,7 +26,7 @@ export default function EditFaqPage() {
 
   const handleSubmit = async (form: any) => {
     try {
-      await updateFaqSection({ ...form, _id: id as string });
+      await updateFaqSection(id as string, form);
       router.push("/admin/home/faq");
     } catch (err) {
       console.error("Update error:", err);

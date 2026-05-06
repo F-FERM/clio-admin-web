@@ -22,9 +22,9 @@ export const createFaqSection = async (data: Partial<ListFaqSection>) => {
   }
 };
 
-export const updateFaqSection = async (data: Partial<ListFaqSection> & { _id: string }) => {
+export const updateFaqSection = async (id: string, data: Partial<ListFaqSection>) => {
   try {
-    const res = await axiosInstance.patch(BASE, data);
+    const res = await axiosInstance.patch(`${BASE}`, data);
     return res.data;
   } catch (error) {
     throw (error as AxiosError).response?.data;
